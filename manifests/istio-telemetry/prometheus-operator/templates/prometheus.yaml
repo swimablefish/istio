@@ -34,9 +34,21 @@ spec:
       release: {{ .Release.Name }}
     annotations:
       sidecar.istio.io/inject: "false"
+  {{- if .Values.prometheusOperator.persist }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - {{ .Values.prometheusOperator.accessMode }}
+        resources:
+          requests:
+            storage: {{ .Values.prometheusOperator.storageSize }}
+        storageClassName: {{ .Values.prometheusOperator.storageClassName }}
+  {{- end }}
+  {{- if .Values.prometheus.resources }}
   resources:
-    requests:
-      memory: 400Mi
+  {{ toYaml .Values.prometheus.resources | indent 4 }}
+  {{- end }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

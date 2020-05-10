@@ -52,6 +52,8 @@ spec:
 {{ toYaml .Values.global.defaultResources | indent 12 }}
 {{- end }}
           volumeMounts:
+          - name: data
+            mountPath: /prometheus/data
           - name: config-volume
             mountPath: /etc/prometheus
           - mountPath: /etc/istio-certs
@@ -221,7 +223,13 @@ spec:
       - name: config-volume
         configMap:
           name: prometheus
-
+      - name: data
+        {{- if .Values.prometheus.persist }}
+        persistentVolumeClaim:
+          claimName: istio-prometheus-pvc
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
 {{- if .Values.prometheus.provisionPrometheusCert }}
       - name: istio-certs
         emptyDir:

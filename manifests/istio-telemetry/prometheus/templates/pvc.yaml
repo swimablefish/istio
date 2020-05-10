@@ -1,0 +1,17 @@
+{{- if .Values.prometheus.persist }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: istio-prometheus-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: prometheus
+    release: {{ .Release.Name }}
+spec:
+  storageClassName: {{ .Values.prometheus.storageClassName }}
+  accessModes:
+    - {{ .Values.prometheus.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.prometheus.storageSize }}
+{{- end }}
